@@ -12,7 +12,6 @@ import { saveDebugState } from "./DebugCanvas";
 
 export const AppMainMenu: React.FC<{
   onCollabDialogOpen: () => any;
-  isCollaborating: boolean;
   isCollabEnabled: boolean;
   theme: Theme | "system";
   setTheme: (theme: Theme | "system") => void;
@@ -26,7 +25,6 @@ export const AppMainMenu: React.FC<{
       <MainMenu.DefaultItems.SaveAsImage />
       {props.isCollabEnabled && (
         <MainMenu.DefaultItems.LiveCollaborationTrigger
-          isCollaborating={props.isCollaborating}
           onSelect={() => props.onCollabDialogOpen()}
         />
       )}

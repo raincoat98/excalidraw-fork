@@ -21,7 +21,6 @@ import { useCallbackRefState } from "../packages/excalidraw/hooks/useCallbackRef
 import { t } from "../packages/excalidraw/i18n";
 import {
   Excalidraw,
-  LiveCollaborationTrigger,
   TTDDialogTrigger,
   StoreAction,
   reconcileElements,
@@ -50,11 +49,7 @@ import {
   SYNC_BROWSER_TABS_TIMEOUT,
 } from "./app_constants";
 import type { CollabAPI } from "./collab/Collab";
-import Collab, {
-  collabAPIAtom,
-  isCollaboratingAtom,
-  isOfflineAtom,
-} from "./collab/Collab";
+import Collab, { collabAPIAtom } from "./collab/Collab";
 import {
   exportToBackend,
   getCollaborationLinkData,
@@ -82,7 +77,6 @@ import {
   LocalData,
 } from "./data/LocalData";
 import { isBrowserStorageStateNewer } from "./data/tabSync";
-import clsx from "clsx";
 import {
   parseLibraryTokensFromUrl,
   useHandleLibrary,
@@ -90,7 +84,6 @@ import {
 import { AppMainMenu } from "./components/AppMainMenu";
 import { AppFooter } from "./components/AppFooter";
 import { Provider, useAtom, useAtomValue } from "jotai";
-import { useAtomWithInitialValue } from "../packages/excalidraw/jotai";
 import { appJotaiStore } from "./app-jotai";
 
 import "./index.scss";
@@ -400,9 +393,6 @@ const ExcalidrawWrapper = () => {
 
   const [, setShareDialogState] = useAtom(shareDialogStateAtom);
   const [collabAPI] = useAtom(collabAPIAtom);
-  const [isCollaborating] = useAtomWithInitialValue(isCollaboratingAtom, () => {
-    return isCollaborationLink(window.location.href);
-  });
   const collabError = useAtomValue(collabErrorIndicatorAtom);
 
   useHandleLibrary({
@@ -654,10 +644,6 @@ const ExcalidrawWrapper = () => {
     appState: AppState,
     files: BinaryFiles,
   ) => {
-    if (collabAPI?.isCollaborating()) {
-      collabAPI.syncElements(elements);
-    }
-
     // this check is redundant, but since this is a hot path, it's best
     // not to evaludate the nested expression every time
     if (!LocalData.isSavePaused()) {
@@ -758,8 +744,6 @@ const ExcalidrawWrapper = () => {
     );
   };
 
-  const isOffline = useAtomValue(isOfflineAtom);
-
   const onCollabDialogOpen = useCallback(
     () => setShareDialogState({ isOpen: true, type: "collaborationOnly" }),
     [setShareDialogState],
@@ -824,17 +808,11 @@ const ExcalidrawWrapper = () => {
   };
 
   return (
-    <div
-      style={{ height: "100%" }}
-      className={clsx("excalidraw-app", {
-        "is-collaborating": isCollaborating,
-      })}
-    >
+    <div style={{ height: "100%" }}>
       <Excalidraw
         excalidrawAPI={excalidrawRefCallback}
         onChange={onChange}
         initialData={initialStatePromiseRef.current.promise}
-        isCollaborating={isCollaborating}
         onPointerUpdate={collabAPI?.onPointerUpdate}
         UIOptions={{
           canvasActions: {
@@ -881,12 +859,6 @@ const ExcalidrawWrapper = () => {
           return (
             <div className="top-right-ui">
               {collabError.message && <CollabError collabError={collabError} />}
-              <LiveCollaborationTrigger
-                isCollaborating={isCollaborating}
-                onSelect={() =>
-                  setShareDialogState({ isOpen: true, type: "share" })
-                }
-              />
             </div>
           );
         }}
@@ -899,7 +871,6 @@ const ExcalidrawWrapper = () => {
       >
         <AppMainMenu
           onCollabDialogOpen={onCollabDialogOpen}
-          isCollaborating={isCollaborating}
           isCollabEnabled={!isCollabDisabled}
           theme={appTheme}
           setTheme={(theme) => setAppTheme(theme)}
@@ -929,11 +900,7 @@ const ExcalidrawWrapper = () => {
         {excalidrawAPI && <AIComponents excalidrawAPI={excalidrawAPI} />}
 
         <TTDDialogTrigger />
-        {isCollaborating && isOffline && (
-          <div className="collab-offline-warning">
-            {t("alerts.collabOfflineWarning")}
-          </div>
-        )}
+
         {latestShareableLink && (
           <ShareableLinkDialog
             link={latestShareableLink}
