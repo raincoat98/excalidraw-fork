@@ -131,6 +131,48 @@ import { isElementLink } from "../packages/excalidraw/element/elementLink";
 
 polyfill();
 
+// 더블 클릭 방지
+(function () {
+  function initializeDoubleClickHandler() {
+    const excalidrawContainers = document.querySelectorAll(
+      ".excalidraw-container",
+    );
+
+    excalidrawContainers.forEach((container) => {
+      container.addEventListener(
+        "dblclick",
+        (event) => {
+          const isKeyDown = (event as MouseEvent).shiftKey;
+
+          if (!isKeyDown) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        },
+        true,
+      );
+    });
+  }
+  function observeDOM() {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length) {
+          initializeDoubleClickHandler();
+        }
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  function initializeScript() {
+    initializeDoubleClickHandler();
+    observeDOM();
+  }
+
+  initializeScript();
+})();
+
 window.EXCALIDRAW_THROTTLE_RENDER = true;
 
 declare global {
