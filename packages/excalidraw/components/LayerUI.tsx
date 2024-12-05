@@ -20,12 +20,11 @@ import type {
   UIAppState,
   AppClassProperties,
 } from "../types";
-import { capitalizeString, isShallowEqual } from "../utils";
+import { isShallowEqual } from "../utils";
 import { SelectedShapeActions, ShapesSwitcher } from "./Actions";
 import { ErrorDialog } from "./ErrorDialog";
 import { ImageExportDialog } from "./ImageExportDialog";
 import { FixedSideContainer } from "./FixedSideContainer";
-import { HintViewer } from "./HintViewer";
 import { Island } from "./Island";
 import { LoadingMessage } from "./LoadingMessage";
 import { LockButton } from "./LockButton";
@@ -49,7 +48,6 @@ import { OverwriteConfirmDialog } from "./OverwriteConfirm/OverwriteConfirm";
 import { HandButton } from "./HandButton";
 import { isHandToolActive } from "../appState";
 import { TunnelsContext, useInitializeTunnels } from "../context/tunnels";
-import { LibraryIcon } from "./icons";
 import { UIAppStateContext } from "../context/ui-appState";
 import { DefaultSidebar } from "./DefaultSidebar";
 import { EyeDropper, activeEyeDropperAtom } from "./EyeDropper";
@@ -266,12 +264,6 @@ const LayerUI = ({
                             "zen-mode": appState.zenModeEnabled,
                           })}
                         >
-                          <HintViewer
-                            appState={appState}
-                            isMobile={device.editor.isMobile}
-                            device={device}
-                            app={app}
-                          />
                           {heading}
                           <Stack.Row gap={1}>
                             <PenModeButton
