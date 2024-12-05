@@ -1,5 +1,5 @@
 import polyfill from "../packages/excalidraw/polyfill";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "../packages/excalidraw/analytics";
 import { getDefaultAppState } from "../packages/excalidraw/appState";
 import { ErrorDialog } from "../packages/excalidraw/components/ErrorDialog";
@@ -81,7 +81,6 @@ import {
   parseLibraryTokensFromUrl,
   useHandleLibrary,
 } from "../packages/excalidraw/data/library";
-import { AppMainMenu } from "./components/AppMainMenu";
 import { AppFooter } from "./components/AppFooter";
 import { Provider, useAtom, useAtomValue } from "jotai";
 import { appJotaiStore } from "./app-jotai";
@@ -362,7 +361,7 @@ const ExcalidrawWrapper = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const isCollabDisabled = isRunningInIframe();
 
-  const [appTheme, setAppTheme] = useAtom(appThemeAtom);
+  const [setAppTheme] = useAtom(appThemeAtom);
   const { editorTheme } = useHandleAppTheme();
 
   const [langCode, setLangCode] = useAppLangCode();
@@ -744,11 +743,6 @@ const ExcalidrawWrapper = () => {
     );
   };
 
-  const onCollabDialogOpen = useCallback(
-    () => setShareDialogState({ isOpen: true, type: "collaborationOnly" }),
-    [setShareDialogState],
-  );
-
   // browsers generally prevent infinite self-embedding, there are
   // cases where it still happens, and while we disallow self-embedding
   // by not whitelisting our own origin, this serves as an additional guard
@@ -869,13 +863,6 @@ const ExcalidrawWrapper = () => {
           }
         }}
       >
-        <AppMainMenu
-          onCollabDialogOpen={onCollabDialogOpen}
-          isCollabEnabled={!isCollabDisabled}
-          theme={appTheme}
-          setTheme={(theme) => setAppTheme(theme)}
-          refresh={() => forceRefresh((prev) => !prev)}
-        />
         <OverwriteConfirmDialog>
           <OverwriteConfirmDialog.Actions.ExportToImage />
           <OverwriteConfirmDialog.Actions.SaveToDisk />

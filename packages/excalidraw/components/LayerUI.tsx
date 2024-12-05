@@ -42,7 +42,6 @@ import Footer from "./footer/Footer";
 import { isSidebarDockedAtom } from "./Sidebar/Sidebar";
 import { jotaiScope } from "../jotai";
 import { Provider, useAtom, useAtomValue } from "jotai";
-import MainMenu from "./main-menu/MainMenu";
 import { ActiveConfirmDialog } from "./ActiveConfirmDialog";
 import { OverwriteConfirmDialog } from "./OverwriteConfirm/OverwriteConfirm";
 import { HandButton } from "./HandButton";
@@ -85,33 +84,6 @@ interface LayerUIProps {
   isCollaborating: boolean;
   generateLinkForSelection?: AppProps["generateLinkForSelection"];
 }
-
-const DefaultMainMenu: React.FC<{
-  UIOptions: AppProps["UIOptions"];
-}> = ({ UIOptions }) => {
-  return (
-    <MainMenu __fallback>
-      <MainMenu.DefaultItems.LoadScene />
-      <MainMenu.DefaultItems.SaveToActiveFile />
-      {/* FIXME we should to test for this inside the item itself */}
-      {UIOptions.canvasActions.export && <MainMenu.DefaultItems.Export />}
-      {/* FIXME we should to test for this inside the item itself */}
-      {UIOptions.canvasActions.saveAsImage && (
-        <MainMenu.DefaultItems.SaveAsImage />
-      )}
-      <MainMenu.DefaultItems.SearchMenu />
-      <MainMenu.DefaultItems.Help />
-      <MainMenu.DefaultItems.ClearCanvas />
-      <MainMenu.Separator />
-      <MainMenu.Group title="Excalidraw links">
-        <MainMenu.DefaultItems.Socials />
-      </MainMenu.Group>
-      <MainMenu.Separator />
-      <MainMenu.DefaultItems.ToggleTheme />
-      <MainMenu.DefaultItems.ChangeCanvasBackground />
-    </MainMenu>
-  );
-};
 
 const DefaultOverwriteConfirmDialog = () => {
   return (
@@ -385,7 +357,6 @@ const LayerUI = ({
       {/* render component fallbacks. Can be rendered anywhere as they'll be
           tunneled away. We only render tunneled components that actually
         have defaults when host do not render anything. */}
-      <DefaultMainMenu UIOptions={UIOptions} />
       <DefaultOverwriteConfirmDialog />
       {appState.openDialog?.name === "ttd" && <TTDDialog __fallback />}
       {/* ------------------------------------------------------------------ */}
